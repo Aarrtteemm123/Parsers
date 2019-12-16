@@ -60,9 +60,9 @@ base_urls_keys = list(base_urls.keys())  # keys (Python and Java)
 vac_list = []  # list with vacancies
 vac_by_lan = {}  # list vacancies concrete language
 
-from_email = read_file('from_email.txt')  # bot email
-to_email = read_file('to_email.txt')  # your email
-password = read_file('password.txt')  # password from your email
+from_email = read_file('from_email.txt')  # load bot email
+to_email = read_file('to_email.txt')  # load your email
+password = read_file('password.txt')  # load password from your email
 title = 'Dou-jobs(Python,Java)'  # title msg in email
 fl_update = True  # flag for update list vacancies
 start_time = time.time()  # start time
