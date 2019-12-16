@@ -21,11 +21,11 @@ def get_html_all_vac(dictionary):
 
 def get_html_new_vac(key, lst):
     title = """ <html> <body> <h3 style="font-weight: bolder;color:black;">
-        Hello,good news!<br>See new vacancies from """ + key + """ on Dou.ua<br>
+        Hello,good news!<br>See new vacancies from """ + key + """ on Dou.ua
         </h3><br><hr><br>"""
     body = ""
-    for str in lst:
-        body += """<p style="font-weight: normal;color:black;"> """ + str + """ </p>"""
+    for vac in lst:
+        body += """<p style="font-weight: normal;color:black;"> """ + vac + """ </p>"""
     end = "</body> </html>"
     return title + body + end
 
@@ -60,6 +60,7 @@ from_email = read_file('from_email.txt')
 to_email = read_file('to_email.txt')
 password = read_file('password.txt')
 title = 'Dou-jobs(Python,Java)'
+fl_update = True
 start_time = time.time()
 
 while True:
@@ -88,18 +89,22 @@ while True:
                     title = div.find('a', attrs={'class': 'vt'}).text  # назва вакансій
                     city = div.find('span', attrs={'class': 'cities'}).text  # місто
                     link = div.find('a', attrs={'class': 'vt'})['href']  # силка
-                    string = title + " (" + city + ")" + " " + link
-                    if not vac_list.__contains__(string):
-                        new_vac.append(string)
-                        vac_list.append(string)
+                    vacancy = title + " (" + city + ")" + " " + link
+                    if not vac_list.__contains__(vacancy):
+                        new_vac.append(vacancy)
+                        vac_list.append(vacancy)
                 except:
                     pass
-            #if len(new_vac) != 0:
-             #   send_email(from_email, to_email, password, get_html_new_vac(key, new_vac), title)
-            finish_time = time.time()
+            if len(new_vac) != 0 and fl_update:
+                send_email(from_email, to_email, password, get_html_new_vac(key, new_vac), title)
+            now = time.time()
             vac_by_lan[key]=vac_list
-            if finish_time-start_time>10:
-                start_time = finish_time
+            fl_update = True
+            if now-start_time>1728000:#20 days
+                start_time = now
                 send_email(from_email, to_email, password, get_html_all_vac(vac_by_lan), title)
-    time.sleep(2)
-browser.quit()
+                vac_list.clear()
+                fl_update = False
+    time.sleep(60)
+
+#browser.quit()
