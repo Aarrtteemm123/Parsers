@@ -44,9 +44,10 @@ for video_name in soup.find_all('h1', attrs={'class': 'title style-scope ytd-vid
 
 
 with open(filename, 'w+', encoding='cp1251', newline='') as file:
-    try:
-        writer = csv.writer(file,delimiter=';')
-        writer.writerows(comment_info)
-    except: print("Ooopppsss...")
+    writer = csv.writer(file, delimiter=';')
+    for i in range(len(comment_info)):
+        try:
+            writer.writerow(comment_info[i])
+        except: print("Ooopppsss...")
 
 browser.quit()
