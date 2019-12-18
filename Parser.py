@@ -4,19 +4,18 @@ from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 
 
-class YouTube_parser_comment(object):
+class YouTube_comment_parser(object):
 
     def __init__(self, url, path_to_driver):
         options = webdriver.ChromeOptions()  # option Chrome
         options.add_argument('headless')  # to open the browser in Headless mode
-        self.browser = webdriver.Chrome(executable_path=path_to_driver)
+        self.browser = webdriver.Chrome(executable_path=path_to_driver, options=options)
         self.url = url
         self.comment_info = []
 
     def run_parser(self):
-        comment_bloks = self.load_data()
-        self.parser(comment_bloks)
-        self.browser.quit()
+        comment_blocks = self.load_data()
+        self.parser(comment_blocks)
 
     def get_video_name(self):
         soup = bs(self.browser.page_source, 'lxml')
@@ -54,12 +53,15 @@ class YouTube_parser_comment(object):
             if counter_pause == 5: break
         return comment_blocks
 
-    def parser(self, comment_bloks):
+    def parser(self, comment_blocks):
         self.comment_info = [["AUTHOR", "COMMENT", "LIKES"]]
-        for block in comment_bloks:
+        for block in comment_blocks:
             user = block.find('a', attrs={'id': 'author-text'}).text  # user
             text = block.find('yt-formatted-string', attrs={'id': 'content-text'}).text  # user
             likes = block.find('span', attrs={'id': 'vote-count-middle'}).text  # user
             likes = ' '.join(likes.split())
             user = ' '.join(user.split())
             self.comment_info.append([user, text, likes])
+
+    def close(self):
+        self.browser.quit()
