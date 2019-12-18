@@ -1,7 +1,10 @@
+import color as color
+
 from Parser import YouTube_comment_parser
 
-base_url = "https://www.youtube.com/watch?v=MDi05WQd6ZM&list=PLPWylTRFeg-BVCSwZM_CazmOAPKRk9l6o"
 path_to_driver = "chromedriver.exe"
+base_url = input("Input url to YouTube video:  ")
+print(color.blue('--> save url...'))
 
 parser = YouTube_comment_parser(base_url, path_to_driver)
 parser.run_parser()
