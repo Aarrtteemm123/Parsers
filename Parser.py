@@ -8,14 +8,16 @@ from selenium import webdriver
 class YouTube_comment_parser(object):
 
     def __init__(self, url, path_to_driver):
-        print(color.blue("--> setting browser options..."))
-        options = webdriver.ChromeOptions()  # option Chrome
-        options.add_argument('headless')  # to open the browser in Headless mode
-        print(color.blue("--> loading chrome driver..."))
-        self.browser = webdriver.Chrome(executable_path=path_to_driver, options=options)
+        print(color.green("--> setting browser options..."))
+        options = webdriver.FirefoxOptions()  # option Chrome
+        options.headless = True
+        print(color.green("--> loading firefox driver..."))
+        self.browser = webdriver.Firefox(executable_path=path_to_driver, options=options)
         self.url = url
         self.comment_info = []
         self.code_error = 0
+        self.number_error_save = 0
+        self.number_comments = 0
 
     def run_parser(self):
         comment_blocks = self.load_data()
@@ -23,7 +25,7 @@ class YouTube_comment_parser(object):
 
     def get_video_name(self):
         if self.code_error == 1: return
-        print(color.blue("--> finding video name..."))
+        print(color.green("--> finding video name..."))
         soup = bs(self.browser.page_source, 'lxml')
         for video_name in soup.find_all('h1', attrs={'class': 'title style-scope ytd-video-primary-info-renderer'}):
             return video_name.find('yt-formatted-string',
@@ -34,19 +36,20 @@ class YouTube_comment_parser(object):
         if path is None:
             path = self.get_video_name() + ".csv"
         with open(path, 'w+', encoding='cp1251', newline='') as file:
-            print(color.blue("--> creating csv file..."))
+            print(color.green("--> creating csv file..."))
             writer = csv.writer(file, delimiter=';')
-            print(color.blue("--> saving..."))
+            print(color.green("--> saving..."))
             for i in range(len(self.comment_info)):
                 try:
                     writer.writerow(self.comment_info[i])
                 except:
+                    self.number_error_save+=1
                     print(color.yellow("--> ops..., comment save error :("))
 
     def load_data(self):
         if self.code_error == 1: return
         number_comment, counter_pause = 0, 0
-        print(color.blue("--> opening url..."))
+        print(color.green("--> opening url..."))
         try:
             self.browser.get(self.url)
         except:
@@ -54,7 +57,7 @@ class YouTube_comment_parser(object):
             self.browser.quit()
             self.code_error = 1
         if self.code_error == 1: return
-        print(color.blue("--> start parsing..."))
+        print(color.green("--> start parsing..."))
         html = self.browser.find_element_by_tag_name('html')
         while True:
             for i in range(100):
@@ -74,7 +77,7 @@ class YouTube_comment_parser(object):
     def parser(self, comment_blocks):
         if self.code_error == 1: return
         self.comment_info = [["AUTHOR", "COMMENT", "LIKES"]]
-        print(color.blue("--> finding data..."))
+        print(color.green("--> finding data..."))
         for block in comment_blocks:
             user = block.find('a', attrs={'id': 'author-text'}).text  # user
             text = block.find('yt-formatted-string', attrs={'id': 'content-text'}).text  # user
@@ -82,7 +85,8 @@ class YouTube_comment_parser(object):
             likes = ' '.join(likes.split())
             user = ' '.join(user.split())
             self.comment_info.append([user, text, likes])
+        self.number_comments = len(self.comment_info)
 
     def close(self):
-        print(color.blue("--> close browser..."))
+        print(color.green("--> close browser..."))
         self.browser.quit()
