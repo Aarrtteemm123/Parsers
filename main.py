@@ -2,7 +2,7 @@ import csv
 
 from selenium import webdriver
 from bs4 import BeautifulSoup
-import time, re, pyautogui
+import time, re
 
 
 def read_file(filename):  # read data from file
@@ -33,10 +33,10 @@ input_password = browser.find_element_by_class_name('gr27e ').find_element_by_na
 input_username.send_keys(login)
 input_password.send_keys(password)
 
-pyautogui.keyDown('enter')
-pyautogui.keyUp('enter')
+browser.find_element_by_xpath('/html/body/div[1]/section/main/div/article/div/div[1]/div/form/div[4]/button').click()
 time.sleep(3)
 
+'''
 browser.get(profile_url)
 number_followers = int(re.split(' ', browser.find_elements_by_class_name('-nal3 ')[1].get_attribute('text'))[0])
 browser.find_elements_by_class_name('Y8-fY ')[1].click()
@@ -56,4 +56,9 @@ while len(followers_list) < number_followers:
 
 print(len(followers_list))
 save_csv(followers_list)
+'''
+browser.get('https://www.instagram.com/'+str(login)+'/')
+time.sleep(2)
+browser.find_element_by_class_name('AFWDX').click()
+browser.find_element_by_xpath('/html/body/div[4]/div/div/div/button[9]').click()
 browser.quit()
